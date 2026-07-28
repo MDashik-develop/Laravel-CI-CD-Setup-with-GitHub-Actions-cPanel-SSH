@@ -118,10 +118,12 @@ jobs:
 
 GitHub-এ আপনার প্রোজেক্টের **Settings > Secrets and variables > Actions**-এ গিয়ে নিচের ৪টি সিক্রেট সেট করুন:
 
+click this button New Repository Secrets
+
 | Variable Name | Description |
 | :--- | :--- |
 | **`SSH_HOST`** | আপনার সার্ভারের IP বা ডোমেইন |
-| **`SSH_USER`** | আপনার SSH ইউজারনেম (যেমন: `demosashik`) |
+| **`SSH_USER`** | আপনার SSH ইউজারনেম (যেমন: `usernameCapnel`) |
 | **`SSH_PORT`** | SSH পোর্ট (ডিফল্ট সাধারণত `22`) |
 | **`SSH_PRIVATE_KEY`** | সার্ভারে `cat ~/.ssh/id_ed25519` লিখে প্রাপ্ত প্রাইভেট কি |
 
