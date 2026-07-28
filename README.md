@@ -1,8 +1,3 @@
-আপনার রিকোয়েস্ট অনুযায়ী আমি একটি পূর্ণাঙ্গ এবং সুন্দর README.md ডিজাইন করে
-দিচ্ছি। এতে SSH সেটআপ থেকে শুরু করে প্রোজেক্ট মুভ করা এবং CI/CD কনফিগারেশন
-পর্যন্ত সব স্টেপ আইকনসহ দেওয়া আছে।
-
-এটি কপি করে আপনার README.md ফাইলে বসিয়ে দিন:
 
 # 🚀 Laravel CI/CD with SSH & GitHub Actions Guide
 
@@ -11,62 +6,78 @@
 ---
 
 ### **Step 1: 🔍 Check for Existing SSH Keys**
+
 প্রথমে আপনার সার্ভার টার্মিনালে চেক করুন কোনো SSH Key আছে কি না:
+
 ```bash
 ls -al ~/.ssh
+```
 
-যদি id_rsa.pub বা id_ed25519.pub না থাকে, তবে নতুন কি তৈরি করুন।
+যদি `id_rsa.pub` বা `id_ed25519.pub` না থাকে, তবে নতুন কি তৈরি করুন।
 
-Step 2: 🔑 Generate a New SSH Key
+---
+
+### **Step 2: 🔑 Generate a New SSH Key**
 
 আপনার GitHub ইমেইল ব্যবহার করে নিচের কমান্ডটি রান করুন:
 
+```bash
 ssh-keygen -t ed25519 -C "your_email@example.com"
+```
 
-(সবগুলোতে এন্টার চেপে ডিফল্ট অপশন রাখুন)
+*(সবগুলোতে এন্টার চেপে ডিফল্ট অপশন রাখুন)*
 
 এরপর কি-টি অ্যাক্টিভেট করুন:
 
+```bash
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
+```
 
-Step 3: 📝 Add SSH Key to GitHub
+---
+
+### **Step 3: 📝 Add SSH Key to GitHub**
 
 আপনার পাবলিক কি-টি কপি করুন:
 
+```bash
 cat ~/.ssh/id_ed25519.pub
+```
 
-এখন:
+**এখন যা করবেন:**
+1. আপনার **GitHub Repo** তে যান।
+2. **Settings** -> **SSH and GPG keys** এ যান।
+3. **New SSH Key** তে ক্লিক করে কপি করা কি-টি পেস্ট করুন এবং সেভ দিন।
 
-1.  আপনার GitHub Repo তে যান।
-2.  Settings -> SSH and GPG keys এ যান।
-3.  New SSH Key তে ক্লিক করে কপি করা কি-টি পেস্ট করুন এবং সেভ দিন।
+---
 
-Step 4: 📂 Clone Repo & Manage Folders
+### **Step 4: 📂 Clone Repo & Manage Folders**
 
-আপনার সার্ভারের নির্দিষ্ট ফোল্ডারে (যেমন: public_html বা প্রোজেক্ট ফোল্ডার) গিয়ে
-SSH দিয়ে ক্লোন করুন:
+আপনার সার্ভারের নির্দিষ্ট ফোল্ডারে (যেখানে প্রোজেক্ট রাখতে চান) গিয়ে SSH দিয়ে ক্লোন করুন:
 
-# প্রোজেক্ট ক্লোন করা
+```bash
 git clone git@github.com:MDashik-develop/practice-cicd.git
+```
 
-⚠️ সমস্যা: ক্লোন করার পর প্রোজেক্টের নামে একটি ফোল্ডার তৈরি হয়। কিন্তু আমরা চাই
-সব ফাইল মেইন ডিরেক্টরিতে থাকুক।
+**⚠️ প্রোজেক্ট ফাইলগুলো মেইন ডিরেক্টরিতে মুভ করা:**
+সাধারণত ক্লোন করলে একটি আলাদা ফোল্ডার তৈরি হয়। সব ফাইল মেইন ডিরেক্টরিতে আনতে এবং খালি ফোল্ডার ডিলিট করতে নিচের কমান্ডগুলো দিন:
 
-✅ সমাধান (ফাইল মুভ করা):
-
-# প্রোজেক্ট ফোল্ডারের ভেতরে সব ফাইল (লুকানো ফাইলসহ) মেইন ডিরেক্টরিতে মুভ করুন
+```bash
+# প্রোজেক্ট ফোল্ডারের ভেতরে সব ফাইল মেইন ডিরেক্টরিতে মুভ করুন
 mv practice-cicd/* .
 mv practice-cicd/.* .
 
 # এখন খালি ফোল্ডারটি ডিলিট করে দিন
 rm -rf practice-cicd
+```
 
-Step 5: 🤖 Setup GitHub Actions Workflow
+---
 
-আপনার প্রোজেক্টের ভেতর .github/workflows/deploy-laravel.yml নামে একটি ফাইল তৈরি
-করুন এবং নিচের কোডটি পেস্ট করুন:
+### **Step 5: 🤖 Setup GitHub Actions Workflow**
 
+আপনার প্রোজেক্টের ভেতর `.github/workflows/deploy-laravel.yml` নামে একটি ফাইল তৈরি করুন এবং নিচের কোডটি পেস্ট করুন:
+
+```yaml
 name: Laravel CI/CD Deployment
 
 on:
@@ -99,32 +110,33 @@ jobs:
             
             echo "Deployment successful!"
           EOF
+```
 
-Step 6: 🔐 Set Repository Secrets
+---
 
-GitHub-এ আপনার প্রোজেক্টের Settings > Secrets and variables > Actions-এ গিয়ে
-নিচের ভেরিয়েবলগুলো সেট করুন:
+### **Step 6: 🔐 Set Repository Secrets**
 
-| Variable Name         | Description                                               |
-| :-------------------- | :-------------------------------------------------------- |
-| **`SSH_HOST`**        | আপনার সার্ভারের IP বা ডোমেইন                              |
-| **`SSH_USER`**        | আপনার SSH ইউজারনেম (যেমন: `demosashik`)                   |
-| **`SSH_PORT`**        | SSH পোর্ট (ডিফল্ট সাধারণত `22`)                           |
+GitHub-এ আপনার প্রোজেক্টের **Settings > Secrets and variables > Actions**-এ গিয়ে নিচের ৪টি সিক্রেট সেট করুন:
+
+| Variable Name | Description |
+| :--- | :--- |
+| **`SSH_HOST`** | আপনার সার্ভারের IP বা ডোমেইন |
+| **`SSH_USER`** | আপনার SSH ইউজারনেম (যেমন: `demosashik`) |
+| **`SSH_PORT`** | SSH পোর্ট (ডিফল্ট সাধারণত `22`) |
 | **`SSH_PRIVATE_KEY`** | সার্ভারে `cat ~/.ssh/id_ed25519` লিখে প্রাপ্ত প্রাইভেট কি |
 
-Step 7: ✅ Final Step - Server Permission
+---
 
-সার্ভারে এই শেষ কমান্ডটি দিতে ভুলবেন না, যাতে GitHub আপনার সার্ভারে এক্সেস পায়:
+### **Step 7: ✅ Final Step - Server Permission**
 
+সার্ভারে এই শেষ কমান্ডটি দিতে ভুলবেন না, যাতে GitHub আপনার হয়ে কমান্ড চালানোর পারমিশন পায়:
+
+```bash
 cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 chmod 700 ~/.ssh
+```
 
-🚀 এখন থেকে আপনি যখনই কোড পুশ করবেন, তা অটোমেটিক সার্ভারে আপডেট হয়ে যাবে!
+---
 
-
-### এই ডিজাইনের সুবিধা:
-*   **Copy-friendly:** কোড ব্লকগুলো থেকে সরাসরি কমান্ড কপি করা যাবে।
-*   **Folder Correction:** আপনি যে ফাইল মুভ (`mv`) এবং ফোল্ডার ডিলিট করার কথা বলেছিলেন, সেটি **Step 4** এ সুন্দরভাবে বুঝিয়ে দেওয়া হয়েছে।
-*   **Visual Appeal:** বোল্ড টেক্সট, আইকন এবং টেবিল ব্যবহারের ফলে এটি সহজে পড়া যায়।
-*   **Reference Integration:** আপনার পছন্দের রিপোজিটরির (mdabdullajobayer) SSH স্টেপগুলো এখানে অন্তর্ভুক্ত করা হয়েছে।
+🚀 **এখন থেকে আপনি যখনই কোড পুশ করবেন, তা অটোমেটিক সার্ভারে আপডেট হয়ে যাবে!**
