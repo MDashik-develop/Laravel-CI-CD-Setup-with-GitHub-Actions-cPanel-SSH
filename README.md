@@ -1,60 +1,71 @@
-আপনার স্ক্রিনশট দেখে বুঝলাম সমস্যাটি কোথায়। আপনি টেক্সটগুলো সরাসরি পেস্ট করেছেন,
-কিন্তু Markdown Formatting ব্যবহার করেননি। GitHub-এ ডিজাইন সুন্দর করার জন্য
-নির্দিষ্ট কিছু কোড (যেমন #, ```, -) ব্যবহার করতে হয়।
+আপনার রিকোয়েস্ট অনুযায়ী আমি একটি পূর্ণাঙ্গ এবং সুন্দর README.md ডিজাইন করে
+দিচ্ছি। এতে SSH সেটআপ থেকে শুরু করে প্রোজেক্ট মুভ করা এবং CI/CD কনফিগারেশন
+পর্যন্ত সব স্টেপ আইকনসহ দেওয়া আছে।
 
-নিচের বক্সে আমি আপনার জন্য একদম রেডিমেড কোড লিখে দিচ্ছি। আপনি আপনার README.md
-ফাইলটি এডিট মোডে ওপেন করে আগের সব মুছে ফেলুন এবং নিচের এই কোডটি কপি করে পেস্ট
-করে সেভ দিন।
+এটি কপি করে আপনার README.md ফাইলে বসিয়ে দিন:
 
-# 🚀 Laravel CI/CD Setup with GitHub Actions & cPanel (SSH)
+# 🚀 Laravel CI/CD with SSH & GitHub Actions Guide
 
-এই গাইডটি আপনাকে শেখাবে কীভাবে **GitHub Actions** ব্যবহার করে আপনার **Laravel** প্রোজেক্ট অটোমেটিক **cPanel/VPS**-এ ডিপ্লয় করবেন। এর ফলে আপনি যখনই কোড পুশ করবেন, সেটি অটোমেটিক সার্ভারে আপডেট হয়ে যাবে।
+এই গাইডটি অনুসরণ করে আপনি আপনার Laravel প্রোজেক্টকে GitHub থেকে সরাসরি cPanel বা VPS সার্ভারে অটোমেটিক ডিপ্লয় করতে পারবেন।
 
 ---
 
-### 📋 ধাপ ১: সার্ভারে SSH Key জেনারেট করা
-প্রথমে আপনার সার্ভারে (টার্মিনাল বা জেলশেল ব্যবহার করে) একটি SSH কি তৈরি করতে হবে।
-
+### **Step 1: 🔍 Check for Existing SSH Keys**
+প্রথমে আপনার সার্ভার টার্মিনালে চেক করুন কোনো SSH Key আছে কি না:
 ```bash
-# SSH কি জেনারেট করতে
+ls -al ~/.ssh
+
+যদি id_rsa.pub বা id_ed25519.pub না থাকে, তবে নতুন কি তৈরি করুন।
+
+Step 2: 🔑 Generate a New SSH Key
+
+আপনার GitHub ইমেইল ব্যবহার করে নিচের কমান্ডটি রান করুন:
+
 ssh-keygen -t ed25519 -C "your_email@example.com"
 
-এন্টার প্রেস করে ডিফল্ট অপশনগুলো সিলেক্ট করুন।
+(সবগুলোতে এন্টার চেপে ডিফল্ট অপশন রাখুন)
 
-🔑 ধাপ ২: GitHub-এ Secrets সেটআপ করা
+এরপর কি-টি অ্যাক্টিভেট করুন:
 
-আপনার রিপোজিটরির Settings > Secrets and variables > Actions-এ যান এবং নিচের ৪টি
-New repository secret অ্যাড করুন:
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
 
-| Secret Name           | Value (কিভাবে পাবেন)                            |
-| :-------------------- | :---------------------------------------------- |
-| **SSH\_HOST**         | আপনার সার্ভারের IP অথবা ডোমেইন                  |
-| **SSH\_USER**         | সার্ভারের ইউজারনেম (যেমন: `demosashik`)         |
-| **SSH\_PORT**         | আপনার SSH পোর্ট (ডিফল্ট `22`)                   |
-| **SSH\_PRIVATE\_KEY** | টার্মিনালে `cat ~/.ssh/id_ed25519` লিখে যা আসবে |
+Step 3: 📝 Add SSH Key to GitHub
 
-সতর্কতা: Private Key-টি -----BEGIN OPENSSH PRIVATE KEY----- থেকে শুরু করে শেষ
-পর্যন্ত সবটুকু কপি করবেন।
+আপনার পাবলিক কি-টি কপি করুন:
 
-🛠️ ধাপ ৩: সার্ভারে Public Key পারমিশন দেওয়া
+cat ~/.ssh/id_ed25519.pub
 
-সার্ভারে এই কমান্ডটি রান করুন যাতে GitHub আপনার হয়ে সার্ভারে কমান্ড চালাতে পারে:
+এখন:
 
-cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-chmod 700 ~/.ssh
+1.  আপনার GitHub Repo তে যান।
+2.  Settings -> SSH and GPG keys এ যান।
+3.  New SSH Key তে ক্লিক করে কপি করা কি-টি পেস্ট করুন এবং সেভ দিন।
 
-📁 ধাপ ৪: প্রথমবার প্রোজেক্ট ক্লোন করা
+Step 4: 📂 Clone Repo & Manage Folders
 
-আপনার সার্ভারের নির্দিষ্ট ডিরেক্টরিতে গিয়ে প্রথমবার রিপোজিটরিটি ক্লোন করে নিন:
+আপনার সার্ভারের নির্দিষ্ট ফোল্ডারে (যেমন: public_html বা প্রোজেক্ট ফোল্ডার) গিয়ে
+SSH দিয়ে ক্লোন করুন:
 
-cd /home/demosashik/practice.ashik.top
+# প্রোজেক্ট ক্লোন করা
 git clone git@github.com:MDashik-develop/practice-cicd.git
 
-🤖 ধাপ ৫: GitHub Workflow ফাইল তৈরি
+⚠️ সমস্যা: ক্লোন করার পর প্রোজেক্টের নামে একটি ফোল্ডার তৈরি হয়। কিন্তু আমরা চাই
+সব ফাইল মেইন ডিরেক্টরিতে থাকুক।
 
-আপনার প্রোজেক্টের রুটে .github/workflows/deploy.yml নামে ফাইলটি তৈরি করুন এবং
-নিচের কোডটি দিন:
+✅ সমাধান (ফাইল মুভ করা):
+
+# প্রোজেক্ট ফোল্ডারের ভেতরে সব ফাইল (লুকানো ফাইলসহ) মেইন ডিরেক্টরিতে মুভ করুন
+mv practice-cicd/* .
+mv practice-cicd/.* .
+
+# এখন খালি ফোল্ডারটি ডিলিট করে দিন
+rm -rf practice-cicd
+
+Step 5: 🤖 Setup GitHub Actions Workflow
+
+আপনার প্রোজেক্টের ভেতর .github/workflows/deploy-laravel.yml নামে একটি ফাইল তৈরি
+করুন এবং নিচের কোডটি পেস্ট করুন:
 
 name: Laravel CI/CD Deployment
 
@@ -66,7 +77,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -80,30 +90,41 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-
-            # আপনার সঠিক প্রোজেক্ট ফোল্ডারে ঢোকা
-            cd /home/demosashik/practice.ashik.top/practice-cicd
-
-            echo "Pulling latest code from GitHub..."
+            
+            # আপনার প্রোজেক্টের সঠিক পাথে যান
+            cd /home/demosashik/practice.ashik.top
+            
+            echo "Pulling latest code..."
             git pull origin main
-
-            echo "Deployment finished successfully!"
+            
+            echo "Deployment successful!"
           EOF
 
-✅ ধাপ ৬: টেস্ট করা
+Step 6: 🔐 Set Repository Secrets
 
-এখন আপনার লোকাল কম্পিউটার থেকে কোডটি git push করুন। GitHub-এর Actions ট্যাবে
-গিয়ে দেখুন সব স্টেপ সবুজ (Success) দেখাচ্ছে কি না। 🚀
+GitHub-এ আপনার প্রোজেক্টের Settings > Secrets and variables > Actions-এ গিয়ে
+নিচের ভেরিয়েবলগুলো সেট করুন:
 
-Author: MD Ashik
-Project: Laravel CI/CD with cPanel SSH (Bangla Guide)
+| Variable Name         | Description                                               |
+| :-------------------- | :-------------------------------------------------------- |
+| **`SSH_HOST`**        | আপনার সার্ভারের IP বা ডোমেইন                              |
+| **`SSH_USER`**        | আপনার SSH ইউজারনেম (যেমন: `demosashik`)                   |
+| **`SSH_PORT`**        | SSH পোর্ট (ডিফল্ট সাধারণত `22`)                           |
+| **`SSH_PRIVATE_KEY`** | সার্ভারে `cat ~/.ssh/id_ed25519` লিখে প্রাপ্ত প্রাইভেট কি |
+
+Step 7: ✅ Final Step - Server Permission
+
+সার্ভারে এই শেষ কমান্ডটি দিতে ভুলবেন না, যাতে GitHub আপনার সার্ভারে এক্সেস পায়:
+
+cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
+🚀 এখন থেকে আপনি যখনই কোড পুশ করবেন, তা অটোমেটিক সার্ভারে আপডেট হয়ে যাবে!
 
 
-### কেন এই ডিজাইনটি সুন্দর দেখাবে?
-১. **Headings:** `#` ব্যবহার করার ফলে বড় হেডলাইন তৈরি হবে।
-২. **Code Blocks:** ` ```bash ` এবং ` ```yaml ` ব্যবহার করার ফলে কোডগুলো কালো ব্যাকগ্রাউন্ডে সুন্দর করে হাইলাইট হবে।
-৩. **Table:** সিক্রেটস গুলো টেবিল আকারে থাকবে, যা পড়তে সহজ।
-৪. **Separators:** `---` দিয়ে আমি প্রতিটি ধাপকে আলাদা করে দিয়েছি।
-৫. **Emojis:** রকেট, চাবি এবং ফোল্ডার ইমোজিগুলো পড়ার অভিজ্ঞতা আরও ভালো করবে।
-
-**এখন জাস্ট এই সম্পূর্ণ টেক্সটটুকু কপি করে আপনার README ফাইলে পেস্ট করে সেভ দিন!** দেখুন একদম প্রফেশনাল লাগবে।
+### এই ডিজাইনের সুবিধা:
+*   **Copy-friendly:** কোড ব্লকগুলো থেকে সরাসরি কমান্ড কপি করা যাবে।
+*   **Folder Correction:** আপনি যে ফাইল মুভ (`mv`) এবং ফোল্ডার ডিলিট করার কথা বলেছিলেন, সেটি **Step 4** এ সুন্দরভাবে বুঝিয়ে দেওয়া হয়েছে।
+*   **Visual Appeal:** বোল্ড টেক্সট, আইকন এবং টেবিল ব্যবহারের ফলে এটি সহজে পড়া যায়।
+*   **Reference Integration:** আপনার পছন্দের রিপোজিটরির (mdabdullajobayer) SSH স্টেপগুলো এখানে অন্তর্ভুক্ত করা হয়েছে।
