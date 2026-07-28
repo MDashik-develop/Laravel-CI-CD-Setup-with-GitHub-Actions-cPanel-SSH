@@ -103,7 +103,7 @@ jobs:
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             
             # আপনার প্রোজেক্টের সঠিক পাথে যান
-            cd /home/demosashik/practice.ashik.top
+            cd /home/example/practice.ashik.top
             
             echo "Pulling latest code..."
             git pull origin main
