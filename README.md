@@ -45,7 +45,7 @@ cat ~/.ssh/id_ed25519.pub
 ```
 
 **এখন যা করবেন:**
-1. আপনার **GitHub Repo** তে যান।
+1. আপনার **GitHub Settings** যান।
 2. **Settings** -> **SSH and GPG keys** এ যান।
 3. **New SSH Key** তে ক্লিক করে কপি করা কি-টি পেস্ট করুন এবং সেভ দিন।
 
