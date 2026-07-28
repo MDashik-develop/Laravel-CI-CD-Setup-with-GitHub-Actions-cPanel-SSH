@@ -56,7 +56,7 @@ cat ~/.ssh/id_ed25519.pub
 আপনার সার্ভারের নির্দিষ্ট ফোল্ডারে (যেখানে প্রোজেক্ট রাখতে চান) গিয়ে SSH দিয়ে ক্লোন করুন:
 
 ```bash
-git clone git@github.com:MDashik-develop/practice-cicd.git
+git clone git@github.com:example/practice-cicd.git
 ```
 
 **⚠️ প্রোজেক্ট ফাইলগুলো মেইন ডিরেক্টরিতে মুভ করা:**
