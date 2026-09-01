@@ -1,3 +1,5 @@
+<img width="704" height="503" alt="image" src="https://github.com/user-attachments/assets/5e81da20-52cf-4321-9709-b0f4f7a40f86" />
+
 
 # 🚀 Laravel CI/CD with SSH & GitHub Actions Guide
 
